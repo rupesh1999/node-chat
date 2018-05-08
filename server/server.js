@@ -4,23 +4,38 @@ const path = require('path');
 const socketIO = require('socket.io');
 
 const {generateMessage} = require('./utils/createMessage');
+const {isRealString} = require('./utils/validation.js');
 const {generateLocationMessage} = require('./utils/createMessage');
 const publicPath = path.join(__dirname + "/../public");
 const port = process.env.port || 3000;
 var app = express();
+const {Users} = require('./utils/users');
 var server = http.createServer(app);
 var io = socketIO(server);
-
+var users = new Users();
 io.on('connection' , (socket) => {
     console.log("new user connected");
 
     socket.on('disconnect' , () => {
-        console.log('user was disconnected');
+        var user = users.removeUser(socket.id);
+        io.to(user.room).emit('updateUserList' , users.getUserList(user.room));
+        io.to(user.room).emit('newMessage' , generateMessage('admin' , `${user.name} left the ${user.room} room`));
     });
 
-    socket.emit('newMessage' , generateMessage('admin' , 'welcome to chat app'));
+    socket.on('join' , (params , callback) => {
 
-    socket.broadcast.emit('newMessage' , generateMessage('admin' , 'new user joined'));
+        if(!isRealString(params.room) || !isRealString(params.name)) {
+            return callback('name and room name should be a valid string');
+        }
+        socket.join(params.room);
+        users.addUser(socket.id , params.name , params.room);
+
+        io.to(params.room).emit('updateUserList' , users.getUserList(params.room));
+        socket.emit('newMessage' , {from: 'admin' , text: 'welcome to the chat app'});
+        socket.broadcast.to(params.room).emit('newMessage' , generateMessage('admin' , `${params.name} joined`));
+        
+        callback();
+    });
 
     socket.on('createMessage' , (message , callback) =>{
         console.log('createmessage' , message);
@@ -30,8 +45,9 @@ io.on('connection' , (socket) => {
         }
     });
 
+
     socket.on('createLocationMessage' , (coords) => {
-        io.emit('newLocationMessage' , generateLocationMessage('admin' , coords.latitude, coords.longitude));
+        io.emit('newLocationMessage' , generateLocationMessage(coords.name , coords.latitude, coords.longitude));
     });
 });
 

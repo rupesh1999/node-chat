@@ -27,8 +27,11 @@
   }
   
   button:hover {
+    border-radius: 10px;
+    box-shadow: 2px 10px 20px rgb(75, 72, 72);
+    transform: scale(1.05);
     border: none;
-    background: #1F4C69;
+    background: rgb(93, 176, 231);
     color: white;
     padding: 10px;
   }
@@ -87,11 +90,11 @@
     overflow-y: scroll;
     width: 260px;
     height: 100vh;
-    background: -moz-linear-gradient(125deg, rgba(39,107,130,1) 0%, rgba(49,84,129,1) 100%); /* ff3.6+ */
+    background: -moz-linear-gradient(125deg, rgb(64, 170, 206) 0%, rgba(49,84,129,1) 100%); /* ff3.6+ */
     background: -webkit-gradient(linear, left top, right bottom, color-stop(0%, rgba(49,84,129,1)), color-stop(100%, rgba(39,107,130,1))); /* safari4+,chrome */
     background: -webkit-linear-gradient(125deg, rgba(39,107,130,1) 0%, rgba(49,84,129,1) 100%); /* safari5.1+,chrome10+ */
     background: -o-linear-gradient(125deg, rgba(39,107,130,1) 0%, rgba(49,84,129,1) 100%); /* opera 11.10+ */
-    background: -ms-linear-gradient(125deg, rgba(39,107,130,1) 0%, rgba(49,84,129,1) 100%); /* ie10+ */
+    background: -ms-linear-gradient(125deg, rgb(69, 172, 206) 0%, rgba(49,84,129,1) 100%); /* ie10+ */
     background: linear-gradient(325deg, rgba(39,107,130,1) 0%, rgba(49,84,129,1) 100%); /* w3c */
   }
   
