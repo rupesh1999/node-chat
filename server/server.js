@@ -7,7 +7,7 @@ const {generateMessage} = require('./utils/createMessage');
 const {isRealString} = require('./utils/validation.js');
 const {generateLocationMessage} = require('./utils/createMessage');
 const publicPath = path.join(__dirname + "/../public");
-const port = process.env.port || 3000;
+const port = process.env.PORT || 3000;
 var app = express();
 const {Users} = require('./utils/users');
 var server = http.createServer(app);
@@ -39,7 +39,10 @@ io.on('connection' , (socket) => {
 
     socket.on('createMessage' , (message , callback) =>{
         console.log('createmessage' , message);
-        io.emit('newMessage' , generateMessage(message.from , message.text));
+        var user = users.getUser(socket.id);
+        if(user) {
+            io.to(user.room).emit('newMessage' , generateMessage(message.from , message.text));
+        }
         if(callback) {
             callback();
         }
@@ -47,7 +50,10 @@ io.on('connection' , (socket) => {
 
 
     socket.on('createLocationMessage' , (coords) => {
-        io.emit('newLocationMessage' , generateLocationMessage(coords.name , coords.latitude, coords.longitude));
+        var user = users.getUser(socket.id);
+        if(user) {
+            io.to(user.room).emit('newLocationMessage' , generateLocationMessage(coords.name , coords.latitude, coords.longitude));
+        }
     });
 });
 
